@@ -122,3 +122,67 @@ public class Main extends Application {
             oversField.clear();
             primaryStage.setScene(startScene);
         });
+
+        // Result label listener
+        resultLabel.textProperty().addListener((obs, oldText, newText) -> {
+            if (!newText.isEmpty()) {
+                playAgainButton.setVisible(true);
+            }
+        });
+
+        primaryStage.setTitle("Cricket Game Simulator");
+        primaryStage.setScene(startScene);
+        primaryStage.show();
+    }
+
+    private void handleBatAction() {
+        try {
+            if (game == null || game.isGameOver()) return;
+
+            String outcome = game.getPlayer().bat();
+            updateGameUI(outcome);
+
+            if (game.isGameOver()) {
+                batButton.setDisable(true);
+                resultLabel.setText(game.getResult(playerName));
+            }
+        } catch (InvalidBattingActionException ex) {
+            showAlert(Alert.AlertType.ERROR, "Batting Error", ex.getMessage());
+        }
+    }
+
+    private void validateInputs(String name, int overs) throws InvalidTeamNameException, InvalidOversException {
+        if (name.isEmpty()) throw new InvalidTeamNameException("Player name cannot be empty!");
+        if (overs <= 0) throw new InvalidOversException("Overs must be greater than zero!");
+    }
+
+    private void initializeGame(int overs) {
+        game = new Game(overs);
+    }
+
+    private void updateUIForGameStart(Stage stage, Scene gameScene, int overs) {
+        botScoreLabel.setText(game.getBot().getSummary(overs));
+        ballsLabel.setText("Balls Faced: 0");
+        scoreLabel.setText("Score: 0");
+        playerStatusLabel.setText("Game started! Press 'Bat' to play.");
+        resultLabel.setText("");
+        batButton.setDisable(false);
+        playAgainButton.setVisible(false);
+        stage.setScene(gameScene);
+    }
+
+    private void updateGameUI(String outcome) {
+        playerStatusLabel.setText(outcome);
+        ballsLabel.setText("Balls Faced: " + game.getPlayer().getBallsFaced());
+        scoreLabel.setText("Score: " + game.getPlayer().getScore());
+    }
+
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}
