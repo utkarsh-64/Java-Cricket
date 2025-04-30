@@ -85,3 +85,40 @@ public class Main extends Application {
                 showAlert(Alert.AlertType.ERROR, "Error", "Something went wrong: " + ex.getMessage());
             }
         });
+
+        // Search button handler
+        searchButton.setOnAction(e -> {
+            try {
+                String name = searchField.getText().trim();
+                if (name.isEmpty()) throw new Exception("Please enter a name");
+
+                String stats = DatabaseManager.getPlayerStats(name);
+                showAlert(Alert.AlertType.INFORMATION, "Player Stats", stats);
+            } catch (PlayerNotFoundException | DatabaseException ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+            }
+        });
+
+        // Delete button handler
+        deleteButton.setOnAction(e -> {
+            try {
+                String name = searchField.getText().trim();
+                if (name.isEmpty()) throw new Exception("Please enter a name");
+
+                DatabaseManager.deletePlayer(name);
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Player deleted successfully!");
+            } catch (PlayerNotFoundException | DatabaseException ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+            }
+        });
+
+        // Play again button handler
+        playAgainButton.setOnAction(e -> {
+            nameField.clear();
+            oversField.clear();
+            primaryStage.setScene(startScene);
+        });
