@@ -50,3 +50,38 @@ public class Main extends Application {
         );
         startLayout.setStyle("-fx-padding: 20;");
         Scene startScene = new Scene(startLayout, 400, 300);
+
+        // Game scene layout
+        VBox gameLayout = new VBox(15,
+                botScoreLabel,
+                ballsLabel,
+                scoreLabel,
+                playerStatusLabel,
+                batButton,
+                resultLabel,
+                playAgainButton
+        );
+        gameLayout.setStyle("-fx-padding: 20;");
+        Scene gameScene = new Scene(gameLayout, 400, 300);
+
+        // Bat button handler
+        batButton.setOnAction(e -> handleBatAction());
+
+        // Start button handler
+        startButton.setOnAction(e -> {
+            try {
+                playerName = nameField.getText().trim();
+                int overs = Integer.parseInt(oversField.getText().trim());
+
+                validateInputs(playerName, overs);
+                //checkPlayerExistence(playerName);
+
+                initializeGame(overs);
+                updateUIForGameStart(primaryStage, gameScene, overs);
+                DatabaseManager.createPlayer(playerName);
+            } catch (InvalidTeamNameException | InvalidOversException ex) {
+                showAlert(Alert.AlertType.ERROR, "Input Error", ex.getMessage());
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Something went wrong: " + ex.getMessage());
+            }
+        });
